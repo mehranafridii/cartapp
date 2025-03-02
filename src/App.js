@@ -1,25 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+// src/App.js
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import ItemsPage from "./pages/ItemsPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import AddItemPage from "./pages/AddItemPage";
+// import { getItems, addItem } from "./api/apiService";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Navbar from "./components/Navbar";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+const App = () => {
+  const [cart, setCart] = useState(
+    () => JSON.parse(localStorage.getItem("cart")) || []
   );
-}
+
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
+
+  const addToCart = (item) => {
+    setCart([...cart, item]);
+  };
+
+  return (
+    <Router>
+      <Navbar cartCount={cart.length} />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/items" element={<ItemsPage addToCart={addToCart} />} />
+        <Route
+          path="/checkout"
+          element={<CheckoutPage cart={cart} setCart={setCart} />}
+        />
+        <Route path="/add" element={<AddItemPage />} />
+      </Routes>
+    </Router>
+  );
+};
 
 export default App;
